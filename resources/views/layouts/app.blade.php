@@ -76,14 +76,14 @@
                             <div class="card-body">
                                 <ul class="nav flex-column">
                                     <li class="nav-item mb-2">
-                                        <a class="nav-link btn btn-primary text-start d-flex align-items-center {{ request()->routeIs('users.index') ? 'active' : '' }}" href="{{ route('users.index') }}">
+                                        <a class="nav-link btn btn-primary text-start d-flex align-items-center {{ request()->routeIs('users.*') ? 'active' : '' }}" href="{{ route('users.index') }}">
                                             <i class="bi bi-people-fill me-2"></i>
                                             Users
                                         </a>
                                     </li>
 
                                     <li class="nav-item">
-                                        <a class="nav-link btn btn-primary text-start d-flex align-items-center {{ request()->routeIs('artists.index') ? 'active' : '' }}" href="{{ route('artists.index') }}">
+                                        <a class="nav-link btn btn-primary text-start d-flex align-items-center {{ request()->routeIs('artists.*') ? 'active' : '' }}" href="{{ route('artists.index') }}">
                                             <i class="bi bi-palette me-2"></i>
                                             Artists
                                         </a>
