@@ -50,15 +50,23 @@
                                 </li>
                             @endif
                         @else
-                            <div class="d-flex justify-content-end">
-                                <!-- Logout Button -->
-                                <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-inline">
-                                    @csrf
-                                    <button type="submit" class="btn btn-danger">
+                            <li class="nav-item dropdown">
+                                <a id="navbarDropdown" class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
+                                    {{ Auth::user()->first_name . ' '.Auth::user()->last_name }}
+                                </a>
+
+                                <div class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                                    <a class="dropdown-item" href="{{ route('logout') }}"
+                                       onclick="event.preventDefault();
+                                                     document.getElementById('logout-form').submit();">
                                         {{ __('Logout') }}
-                                    </button>
-                                </form>
-                            </div>
+                                    </a>
+
+                                    <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
+                                        @csrf
+                                    </form>
+                                </div>
+                            </li>
                         @endguest
                     </ul>
                 </div>
@@ -67,27 +75,35 @@
 
         <div class="container-fluid">
             <div class="row">
+            @auth
                 <nav id="sidebar" class="col-md-3 col-lg-2 d-md-block bg-light sidebar mt-4">
                     <div class="position-sticky">
                         <div class="card">
                             <div class="card-header bg-primary text-white">
-                                <h5 class="mb-0">Navigation</h5>
+                                <h5 class="mb-0">Dashboard</h5>
                             </div>
                             <div class="card-body">
                                 <ul class="nav flex-column">
-                                    <li class="nav-item mb-2">
-                                        <a class="nav-link btn btn-primary text-start d-flex align-items-center {{ request()->routeIs('users.*') ? 'active' : '' }}" href="{{ route('users.index') }}">
-                                            <i class="bi bi-people-fill me-2"></i>
-                                            Users
-                                        </a>
-                                    </li>
 
-                                    <li class="nav-item">
-                                        <a class="nav-link btn btn-primary text-start d-flex align-items-center {{ request()->routeIs('artists.*') ? 'active' : '' }}" href="{{ route('artists.index') }}">
-                                            <i class="bi bi-palette me-2"></i>
-                                            Artists
-                                        </a>
-                                    </li>
+                                    @if(Auth::user()->role === 'super_admin')
+                                        <li class="nav-item mb-2">
+                                            <a class="nav-link btn btn-primary text-start d-flex align-items-center {{ request()->routeIs('users.*') ? 'active' : '' }}" href="{{ route('users.index') }}">
+                                                <i class="bi bi-people-fill me-2"></i>
+                                                Users
+                                            </a>
+                                        </li>
+                                    @endif
+
+                                    @if(Auth::user()->role === 'super_admin' || Auth::user()->role === 'artist_manager')
+
+                                        <li class="nav-item">
+                                            <a class="nav-link btn btn-primary text-start d-flex align-items-center {{ request()->routeIs('artists.*') ? 'active' : '' }}"
+                                               href="{{ route('artists.index') }}">
+                                                <i class="bi bi-palette me-2"></i>
+                                                Artists
+                                            </a>
+                                        </li>
+                                    @endif
 
 
                                     <li class="nav-item">
@@ -101,6 +117,8 @@
                         </div>
                     </div>
                 </nav>
+
+            @endauth
 
 
                 <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 py-4">

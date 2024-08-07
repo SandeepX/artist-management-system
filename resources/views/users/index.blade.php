@@ -13,6 +13,7 @@
                                     <i class="link-icon" data-feather="plus"></i> Add User
                                 </button>
                             </a>
+
                         </div>
                         <div class="mx-auto">
                             <h4 class="text-primary mt-md-0">Users Lists</h4>
@@ -41,8 +42,8 @@
                                     <td>{{ \App\Models\User::ROLE[$user->role] }}</td>
                                     <td>{{ (\App\Models\User::GENDER[$user->gender])}}</td>
                                     <td>{{ $user->dob }}</td>
-                                    <td>{{ $user->address }}</td>
-                                    <td>{{ $user->phone }}</td>
+                                    <td>{{ $user->address ?? '-' }}</td>
+                                    <td>{{ $user->phone ?? '-' }}</td>
                                     <td>
                                         <ul class="d-flex list-unstyled mb-0 justify-content-center">
                                             <li class="me-2">

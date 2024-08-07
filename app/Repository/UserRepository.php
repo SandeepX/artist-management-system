@@ -8,7 +8,7 @@ class UserRepository
 {
     public function getAllUserLists($select=['*'])
     {
-        return DB::table('users')->select($select)->paginate(2);
+        return DB::table('users')->select($select)->paginate(5);
     }
 
     public function findOrFailUserById($userId, $select = ['*'])
@@ -24,19 +24,32 @@ class UserRepository
 
     public function create($data)
     {
-        return DB::table('users')->insert([
-            'first_name' => $data['first_name'],
-            'last_name' => $data['last_name'],
-            'email' => $data['email'],
-            'password' => bcrypt($data['password']),
-            'dob' => $data['dob'],
-            'role' => $data['role'],
-            'gender' => $data['gender'],
-            'address' => $data['address'],
-            'phone' => $data['phone'],
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
+        try{
+            $userId = DB::table('users')->insertGetId([
+                'first_name' => $data['first_name'],
+                'last_name' => $data['last_name'],
+                'email' => $data['email'],
+                'password' => bcrypt($data['password']),
+                'dob' => $data['dob'],
+                'role' => $data['role'],
+                'gender' => $data['gender'],
+                'address' => $data['address'],
+                'phone' => $data['phone'],
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+
+            if ($data['role'] == 'artist') {
+                DB::table('artists')->insert([
+                    'user_id' => $userId
+                ]);
+            }
+            DB::commit();
+        }catch(\Exception $e){
+            DB::rollBack();
+            return $e;
+        }
+
     }
 
     public function update($userDetail,$validatedData)
@@ -54,10 +67,29 @@ class UserRepository
             'phone' => $validatedData['phone'],
             'updated_at' => now(),
         ];
+        try{
+            DB::beginTransaction();
 
-        return DB::table('users')
-            ->where('id', $userId)
-            ->update($updateData);
+            DB::table('users')
+                ->where('id', $userId)
+                ->update($updateData);
+
+            if($validatedData['role'] == 'artist'){
+                $user = DB::table('artists')->where('user_id', $userId)->first();
+
+                if(!$user){
+                    DB::table('artists')->insert([
+                        'user_id' => $userId
+                    ]);
+                }
+            }
+            DB::commit();
+        }catch(\Exception $e){
+            DB::rollBack();
+            return $e;
+        }
+
+
     }
 
     public function delete($userId)

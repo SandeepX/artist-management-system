@@ -18,9 +18,10 @@ class HomeController extends Controller
                 return redirect()->route('users.index');
 
             case 'artist_manager':
-                return redirect()->route('artist-manager.index');
+                return redirect()->route('artists.index');
 
             case 'artist':
+                Auth::logout();
                 return redirect()->route('artist.index');
 
             default:
