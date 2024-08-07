@@ -17,7 +17,7 @@ Route::post('user-register', [\App\Http\Controllers\Auth\RegisterController::cla
 Route::group([
     'prefix' => 'users',
     'as' => 'users.',
-    'middleware' => ['auth']
+    'middleware' => ['auth','super_admin']
 ], function () {
     Route::get('/', [UserController::class, 'index'])->name('index');
     Route::get('create', [UserController::class, 'create'])->name('create');
@@ -28,10 +28,11 @@ Route::group([
 });
 
 Route::group([
-    'prefix' => 'managers',
-    'as' => 'managers.',
+    'prefix' => 'artists',
+    'as' => 'artists.',
     'middleware' => ['auth']
 ], function () {
+    Route::resource('/',\App\Http\Controllers\ArtistController::class)->except(['destroy','show']);
 
 });
 

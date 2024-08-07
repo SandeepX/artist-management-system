@@ -16,6 +16,8 @@
 
     @include('layouts.styles');
     @yield('styles')
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
+
 
 </head>
 <body>
@@ -63,9 +65,49 @@
             </div>
         </nav>
 
-        <main class="py-4">
-            @yield('content')
-        </main>
+        <div class="container-fluid">
+            <div class="row">
+                <nav id="sidebar" class="col-md-3 col-lg-2 d-md-block bg-light sidebar mt-4">
+                    <div class="position-sticky">
+                        <div class="card">
+                            <div class="card-header bg-primary text-white">
+                                <h5 class="mb-0">Navigation</h5>
+                            </div>
+                            <div class="card-body">
+                                <ul class="nav flex-column">
+                                    <li class="nav-item mb-2">
+                                        <a class="nav-link btn btn-primary text-start d-flex align-items-center {{ request()->routeIs('users.index') ? 'active' : '' }}" href="{{ route('users.index') }}">
+                                            <i class="bi bi-people-fill me-2"></i>
+                                            Users
+                                        </a>
+                                    </li>
+
+                                    <li class="nav-item">
+                                        <a class="nav-link btn btn-primary text-start d-flex align-items-center {{ request()->routeIs('artists.index') ? 'active' : '' }}" href="{{ route('artists.index') }}">
+                                            <i class="bi bi-palette me-2"></i>
+                                            Artists
+                                        </a>
+                                    </li>
+
+
+                                    <li class="nav-item">
+                                        <a class="nav-link btn btn-primary text-start d-flex align-items-center href="#">
+                                            <i class="bi bi-music-note-list me-2"></i>
+                                            Songs
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </nav>
+
+
+                <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 py-4">
+                    @yield('content')
+                </main>
+            </div>
+        </div>
     </div>
 
 @include('layouts.scripts')

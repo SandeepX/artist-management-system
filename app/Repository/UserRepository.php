@@ -8,7 +8,7 @@ class UserRepository
 {
     public function getAllUserLists($select=['*'])
     {
-        return DB::table('users')->select($select)->paginate(20);
+        return DB::table('users')->select($select)->paginate(2);
     }
 
     public function findOrFailUserById($userId, $select = ['*'])
