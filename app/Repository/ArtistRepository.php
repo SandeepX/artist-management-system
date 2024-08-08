@@ -106,7 +106,7 @@ class ArtistRepository
         if ($operation === 'add') {
             DB::update("
             UPDATE artists
-            SET no_of_albums_released = no_of_albums_released + 1
+            SET no_of_albums_released = $currentCount + 1
             WHERE user_id = :user_id
         ", [
             'user_id' => $artistId
@@ -114,7 +114,7 @@ class ArtistRepository
         } elseif ($operation === 'subtract') {
             DB::update("
             UPDATE artists
-            SET no_of_albums_released = no_of_albums_released - 1
+            SET no_of_albums_released = $currentCount - 1
             WHERE user_id = :user_id",
                 [
                     'user_id' => $artistId

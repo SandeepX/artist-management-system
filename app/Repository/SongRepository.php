@@ -50,7 +50,7 @@ class SongRepository
     public function create($data)
     {
         return DB::insert("
-        INSERT INTO songs (artist_id, title, album_name, genre)
+        INSERT INTO songs (artist_id, title, album_name, genre, created_at, updated_at)
         VALUES (:artist_id, :title, :album_name, :genre, :created_at, :updated_at)",
             [
                 'artist_id' => $data['artist_id'],
@@ -59,7 +59,6 @@ class SongRepository
                 'genre' => $data['genre'],
                 'created_at' => now(),
                 'updated_at' => now()
-
             ]);
     }
 

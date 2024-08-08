@@ -61,7 +61,7 @@
                                     <td>
                                         <ul class="d-flex list-unstyled mb-0 justify-content-center">
                                             <li class="me-2">
-                                                <a href="{{ route('music.get-artist-song', $artist->user_id) }}" title="View Songs">
+                                                <a href="{{ route('music.get-artist-song', $artist->user_id) }}" title="View Artist Album Records">
                                                     <i class="link-icon" data-feather="music"></i>
                                                 </a>
                                             </li>

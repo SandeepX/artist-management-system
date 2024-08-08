@@ -47,10 +47,13 @@ Route::group([
 Route::group([
     'prefix' => 'artist',
     'as' => 'music.',
-    'middleware' => ['auth']
+    'middleware' => ['auth','artist']
 ], function () {
+    Route::get('{artist_id}/songs', [SongController::class, 'getSongsByArtistId'])
+        ->name('get-artist-song')
+        ->withoutMiddleware('artist');
+
     Route::get('songs', [SongController::class, 'index'])->name('index');
-    Route::get('{artist_id}/songs', [SongController::class, 'getSongsByArtistId'])->name('get-artist-song');
     Route::get('{artist_id}/songs/create', [SongController::class, 'create'])->name('create');
     Route::post('/song/store', [SongController::class, 'store'])->name('store');
     Route::get('{id}/edit', [SongController::class, 'edit'])->name('edit');

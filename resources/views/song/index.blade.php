@@ -13,17 +13,20 @@
                                     <button class="btn btn-sm btn-danger" ><i class="link-icon" data-feather="arrow-left"></i> Back</button>
                                 </a>
                             @endif
-                            <a href="{{ route('music.create', $artistDetail->id) }}">
-                                <button class="btn btn-sm btn-success">
-                                    <i class="link-icon" data-feather="plus"></i> Add Song
-                                </button>
-                            </a>
+
+                            @if(auth()->user()->role != 'artist_manager')
+                                <a href="{{ route('music.create', $artistDetail->id) }}">
+                                    <button class="btn btn-sm btn-success">
+                                        <i class="link-icon" data-feather="plus"></i> Add Song
+                                    </button>
+                                </a>
+                            @endif
 
                         </div>
                         <div class="mx-auto">
                             <h4 class="text-primary mt-md-0">
-                                {{ucfirst($artistDetail->first_name)}} {{ucfirst($artistDetail->last_name)}}
-                                Song Lists
+                                Song Lists : {{ucfirst($artistDetail->first_name)}} {{ucfirst($artistDetail->last_name)}}
+
                             </h4>
                         </div>
                     </div>
@@ -35,7 +38,9 @@
                                 <th>Album Name</th>
                                 <th>Title</th>
                                 <th>Genre</th>
-                                <th>Actions</th>
+                                @if(auth()->user()->role != 'artist_manager')
+                                    <th>Actions</th>
+                                @endif
                             </tr>
                             </thead>
                             <tbody>
@@ -44,22 +49,24 @@
                                     <td>{{ $song->album_name }} </td>
                                     <td>{{ $song->title }}</td>
                                     <td>{{ $song->genre }}</td>
-                                    <td>
-                                        <ul class="d-flex list-unstyled mb-0 justify-content-center">
-                                            <li class="me-2">
-                                                <a href="{{ route('music.edit', $song->id) }}" title="Edit Song">
-                                                    <i class="link-icon" data-feather="edit"></i>
-                                                </a>
-                                            </li>
-                                            <li>
-                                                <a href="#" class="delete"
-                                                   data-href="{{ route('music.delete', $song->id) }}"
-                                                   title="Delete Song">
-                                                    <i class="link-icon" data-feather="delete"></i>
-                                                </a>
-                                            </li>
-                                        </ul>
-                                    </td>
+                                    @if(auth()->user()->role != 'artist_manager')
+                                        <td>
+                                            <ul class="d-flex list-unstyled mb-0 justify-content-center">
+                                                <li class="me-2">
+                                                    <a href="{{ route('music.edit', $song->id) }}" title="Edit Song">
+                                                        <i class="link-icon" data-feather="edit"></i>
+                                                    </a>
+                                                </li>
+                                                <li>
+                                                    <a href="#" class="delete"
+                                                       data-href="{{ route('music.delete', $song->id) }}"
+                                                       title="Delete Song">
+                                                        <i class="link-icon" data-feather="delete"></i>
+                                                    </a>
+                                                </li>
+                                            </ul>
+                                        </td>
+                                    @endif
                                 </tr>
                             @empty
                                 <tr>
