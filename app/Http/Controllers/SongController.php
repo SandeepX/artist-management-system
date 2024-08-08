@@ -6,7 +6,6 @@ use App\Http\Requests\SongRequest;
 use App\Repository\ArtistRepository;
 use App\Repository\SongRepository;
 use Exception;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 

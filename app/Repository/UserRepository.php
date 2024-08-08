@@ -2,18 +2,29 @@
 
 namespace App\Repository;
 
+use App\Helper\PaginationHelper;
 use Illuminate\Support\Facades\DB;
 
 class UserRepository
 {
-    public function getAllUserLists($select=['*'])
+    public function getAllUserLists($select = ['*'])
     {
-        return DB::table('users')->select($select)->paginate(5);
+        $columns = implode(', ', $select);
+
+        $query = "SELECT $columns FROM users ORDER BY created_at DESC";
+        $totalQuery = "SELECT COUNT(*) as total FROM users";
+
+        return PaginationHelper::paginateRawQuery($query, [], 5, null, $totalQuery);
     }
+
 
     public function findOrFailUserById($userId, $select = ['*'])
     {
-        $user = DB::table('users')->select($select)->where('id', $userId)->first();
+        $columns = implode(', ', $select);
+
+        $query = "SELECT $columns FROM users WHERE id = :id";
+
+        $user = DB::selectOne($query, ['id' => $userId]);
 
         if (!$user) {
             abort(404, 'User not found.');
@@ -22,37 +33,65 @@ class UserRepository
         return $user;
     }
 
+
     public function create($data)
     {
-        try{
-            $userId = DB::table('users')->insertGetId([
-                'first_name' => $data['first_name'],
-                'last_name' => $data['last_name'],
-                'email' => $data['email'],
-                'password' => bcrypt($data['password']),
-                'dob' => $data['dob'],
-                'role' => $data['role'],
-                'gender' => $data['gender'],
-                'address' => $data['address'],
-                'phone' => $data['phone'],
-                'created_at' => now(),
-                'updated_at' => now(),
-            ]);
+        DB::beginTransaction();
+        try {
+            DB::statement("INSERT INTO users (
+                   first_name,
+                   last_name,
+                   email,
+                   password,
+                   dob,
+                   role,
+                   gender,
+                   address,
+                   phone,
+                   created_at,
+                   updated_at
+                   )VALUES(
+                            :first_name,
+                            :last_name,
+                            :email,
+                            :password,
+                            :dob,
+                            :role,
+                            :gender,
+                            :address,
+                            :phone,
+                            :created_at,
+                            :updated_at
+                            )",
+                [
+                    'first_name' => $data['first_name'],
+                    'last_name' => $data['last_name'],
+                    'email' => $data['email'],
+                    'password' => bcrypt($data['password']),
+                    'dob' => $data['dob'],
+                    'role' => $data['role'],
+                    'gender' => $data['gender'],
+                    'address' => $data['address'],
+                    'phone' => $data['phone'],
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ]);
+
+            $userId = DB::selectOne("SELECT LAST_INSERT_ID() as id")->id;
 
             if ($data['role'] == 'artist') {
-                DB::table('artists')->insert([
-                    'user_id' => $userId
-                ]);
+                DB::statement("INSERT INTO artists (user_id) VALUES (:user_id)",
+                    [
+                        'user_id' => $userId
+                    ]);
             }
             DB::commit();
-        }catch(\Exception $e){
+        } catch (\Exception $e) {
             DB::rollBack();
             return $e;
         }
-
     }
-
-    public function update($userDetail,$validatedData)
+    public function update($userDetail, $validatedData)
     {
         $userId = $userDetail->id;
 
@@ -67,38 +106,62 @@ class UserRepository
             'phone' => $validatedData['phone'],
             'updated_at' => now(),
         ];
-        try{
-            DB::beginTransaction();
 
-            DB::table('users')
-                ->where('id', $userId)
-                ->update($updateData);
+        $updateQuery = "
+            UPDATE users
+            SET first_name = :first_name,
+                last_name = :last_name,
+                email = :email,
+                dob = :dob,
+                role = :role,
+                gender = :gender,
+                address = :address,
+                phone = :phone,
+                updated_at = :updated_at
+            WHERE id = :id
+        ";
 
-            if($validatedData['role'] == 'artist'){
-                $user = DB::table('artists')->where('user_id', $userId)->first();
+        $insertArtistQuery = "INSERT INTO artists (user_id) VALUES (:user_id)";
 
-                if(!$user){
-                    DB::table('artists')->insert([
-                        'user_id' => $userId
-                    ]);
+        $selectArtistQuery = "SELECT 1 FROM artists WHERE user_id = :user_id";
+
+        DB::beginTransaction();
+
+        try {
+            DB::statement($updateQuery, array_merge(['id' => $userId], $updateData));
+
+            if ($validatedData['role'] == 'artist') {
+                $artistExists = DB::selectOne($selectArtistQuery, ['user_id' => $userId]);
+
+                if (!$artistExists) {
+                    DB::statement($insertArtistQuery, ['user_id' => $userId]);
                 }
             }
             DB::commit();
-        }catch(\Exception $e){
+        } catch (\Exception $e) {
             DB::rollBack();
             return $e;
         }
-
-
     }
+
 
     public function delete($userId)
     {
-        $user = DB::table('users')->where('id', $userId)->first();
-        if (!$user) {
+        $userExists = DB::selectOne("SELECT 1 FROM users WHERE id = :id", ['id' => $userId]);
+
+        if (!$userExists) {
             abort(404, 'User not found.');
         }
-        return DB::table('users')->where('id', $userId)->delete();
+
+        $query = "DELETE FROM users WHERE id = :id";
+
+        $deleted = DB::delete($query, ['id' => $userId]);
+
+        if ($deleted === 0) {
+            throw new \Exception('Something went wrong.');
+        }
+
+        return $deleted;
     }
 
 }
