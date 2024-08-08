@@ -4,15 +4,17 @@ Artist Management System
 
 1. Clone the repository
 
-   git clone https://github.com/username/repository.git
+   git clone https://github.com/SandeepX/artist-management-system
 
    cd artist-management-system
+
+   git checkout staging 
 
    composer install
 
    npm install
 
-2. Generate an application key:
+3. Generate an application key:
 
     php artisan key:generate
 
