@@ -101,45 +101,51 @@ class ArtistController extends Controller
 
     public function exportArtists()
     {
-        $artists = DB::table('artists')
-            ->join('users', 'artists.user_id', '=', 'users.id')
-            ->select(
-                'users.first_name',
-                'users.last_name',
-                'users.dob',
-                'users.gender',
-                'users.address',
-                'artists.first_release_year',
-                'artists.no_of_albums_released'
-            )
-            ->get();
+        try{
+            $artists = DB::table('artists')
+                ->join('users', 'artists.user_id', '=', 'users.id')
+                ->select(
+                    'users.first_name',
+                    'users.last_name',
+                    'users.dob',
+                    'users.gender',
+                    'users.address',
+                    'artists.first_release_year',
+                    'artists.no_of_albums_released'
+                )
+                ->get();
 
-        $csvData = [];
+            $csvData = [];
 
-        $csvData[] = ['Name', 'Name', 'DOB', 'Gender', 'Address', 'First Release Year', 'No of Albums Released'];
+            $csvData[] = ['Name', 'Name', 'DOB', 'Gender', 'Address', 'First Release Year', 'No of Albums Released'];
 
-        foreach ($artists as $artist) {
-            $csvData[] = [
-                $artist->first_name.' ' .$artist->last_name,
-                $artist->last_name,
-                $artist->dob,
-                User::GENDER[$artist->gender],
-                $artist->address,
-                $artist->first_release_year,
-                $artist->no_of_albums_released,
-            ];
+            foreach ($artists as $artist) {
+                $csvData[] = [
+                    $artist->first_name.' ' .$artist->last_name,
+                    $artist->last_name,
+                    $artist->dob,
+                    User::GENDER[$artist->gender],
+                    $artist->address,
+                    $artist->first_release_year,
+                    $artist->no_of_albums_released,
+                ];
+            }
+
+            $filename = 'artists_' . now()->format('Y-m-d_H-i-s') . '.csv';
+            $filePath = storage_path('app/' . $filename);
+
+            $file = fopen($filePath, 'w');
+            foreach ($csvData as $row) {
+                fputcsv($file, $row);
+            }
+            fclose($file);
+
+            return response()->download($filePath, $filename)->deleteFileAfterSend();
+
+        }catch(Exception $e){
+            return redirect()->back()->with('danger', 'Error Exporting CSV: ' . $e->getMessage());
         }
 
-        $filename = 'artists_' . now()->format('Y-m-d_H-i-s') . '.csv';
-        $filePath = storage_path('app/' . $filename);
-
-        $file = fopen($filePath, 'w');
-        foreach ($csvData as $row) {
-            fputcsv($file, $row);
-        }
-        fclose($file);
-
-        return response()->download($filePath, $filename)->deleteFileAfterSend(true);
     }
 
 
