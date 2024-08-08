@@ -10,7 +10,6 @@
     <link rel="dns-prefetch" href="//fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=Nunito" rel="stylesheet">
 
-    <!-- Scripts -->
     @vite(['resources/sass/app.scss', 'resources/js/app.js'])
 
 
@@ -37,37 +36,23 @@
                     </ul>
 
                     <ul class="navbar-nav ms-auto">
-                        @guest
-                            @if (Route::has('login'))
-                                <li class="nav-item">
-                                    <a class="nav-link" href="{{ route('login') }}">{{ __('Login') }}</a>
-                                </li>
-                            @endif
+                        <li class="nav-item dropdown">
+                            <a id="navbarDropdown" class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
+                                {{ Auth::user()->first_name . ' '.Auth::user()->last_name }}
+                            </a>
 
-                            @if (Route::has('register'))
-                                <li class="nav-item">
-                                    <a class="nav-link" href="{{ route('register') }}">{{ __('Register') }}</a>
-                                </li>
-                            @endif
-                        @else
-                            <li class="nav-item dropdown">
-                                <a id="navbarDropdown" class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
-                                    {{ Auth::user()->first_name . ' '.Auth::user()->last_name }}
+                            <div class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                                <a class="dropdown-item" href="{{ route('logout') }}"
+                                   onclick="event.preventDefault();
+                                                 document.getElementById('logout-form').submit();">
+                                    {{ __('Logout') }}
                                 </a>
 
-                                <div class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
-                                    <a class="dropdown-item" href="{{ route('logout') }}"
-                                       onclick="event.preventDefault();
-                                                     document.getElementById('logout-form').submit();">
-                                        {{ __('Logout') }}
-                                    </a>
-
-                                    <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
-                                        @csrf
-                                    </form>
-                                </div>
-                            </li>
-                        @endguest
+                                <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
+                                    @csrf
+                                </form>
+                            </div>
+                        </li>
                     </ul>
                 </div>
             </div>
@@ -97,7 +82,8 @@
                                     @if(Auth::user()->role === 'super_admin' || Auth::user()->role === 'artist_manager')
 
                                         <li class="nav-item">
-                                            <a class="nav-link btn btn-primary text-start d-flex align-items-center {{ request()->routeIs('artists.*') ? 'active' : '' }}"
+                                            <a class="nav-link btn btn-primary text-start d-flex align-items-center
+                                             {{ request()->routeIs('artists.*') || request()->routeIs('music.*') ? 'active' : '' }}"
                                                href="{{ route('artists.index') }}">
                                                 <i class="bi bi-palette me-2"></i>
                                                 Artists
@@ -105,13 +91,16 @@
                                         </li>
                                     @endif
 
-
+                                @if(\Illuminate\Support\Facades\Auth::user()->role === 'artist')
                                     <li class="nav-item">
-                                        <a class="nav-link btn btn-primary text-start d-flex align-items-center href="#">
+                                        <a class="nav-link btn btn-primary text-start d-flex align-items-center
+                                        {{ request()->routeIs('music.*') ? 'active' : '' }}"
+                                           href="{{ route('music.index', \Illuminate\Support\Facades\Auth::id()) }}">
                                             <i class="bi bi-music-note-list me-2"></i>
                                             Songs
                                         </a>
                                     </li>
+                                @endif
                                 </ul>
                             </div>
                         </div>

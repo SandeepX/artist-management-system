@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('songs', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('artist_id')->constrained('artists','id')->cascadeOnDelete();
+            $table->foreignId('artist_id')->constrained('artists','user_id')->cascadeOnDelete();
             $table->string('title');
             $table->string('album_name');
             $table->enum('genre',['rnb','country','classic','rock','jazz'])->default('rock');

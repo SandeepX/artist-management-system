@@ -87,4 +87,42 @@ class ArtistRepository
         }
     }
 
+    public function updateNoOfAlbumsReleasedCount($artistId, $operation)
+    {
+        $currentCount = DB::selectOne("
+            SELECT no_of_albums_released
+            FROM artists
+            WHERE user_id = :user_id",
+            [
+                'user_id' => $artistId
+            ]);
+
+        if (!$currentCount) {
+            throw new \Exception('Artist Not found');
+        }
+
+        $currentCount = $currentCount->no_of_albums_released;
+
+        if ($operation === 'add') {
+            DB::update("
+            UPDATE artists
+            SET no_of_albums_released = no_of_albums_released + 1
+            WHERE user_id = :user_id
+        ", [
+            'user_id' => $artistId
+            ]);
+        } elseif ($operation === 'subtract') {
+            DB::update("
+            UPDATE artists
+            SET no_of_albums_released = no_of_albums_released - 1
+            WHERE user_id = :user_id",
+                [
+                    'user_id' => $artistId
+                ]);
+        } else {
+            throw new \Exception('Invalid operation');
+        }
+    }
+
+
 }

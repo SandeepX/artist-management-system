@@ -21,8 +21,7 @@ class HomeController extends Controller
                 return redirect()->route('artists.index');
 
             case 'artist':
-                Auth::logout();
-                return redirect()->route('artist.index');
+                return redirect()->route('music.index');
 
             default:
                 Auth::logout();

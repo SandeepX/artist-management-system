@@ -61,6 +61,11 @@
                                     <td>
                                         <ul class="d-flex list-unstyled mb-0 justify-content-center">
                                             <li class="me-2">
+                                                <a href="{{ route('music.get-artist-song', $artist->user_id) }}" title="View Songs">
+                                                    <i class="link-icon" data-feather="music"></i>
+                                                </a>
+                                            </li>
+                                            <li class="me-2">
                                                 <a href="{{ route('artists.edit', $artist->user_id) }}" title="Edit User">
                                                     <i class="link-icon" data-feather="edit"></i>
                                                 </a>
@@ -93,13 +98,13 @@
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="importModalLabel">Import CSV</h5>
+                        <h5 class="modal-title" id="importModalLabel">Import Artists</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
                         <div class="mb-3">
                             <label for="csv_sample" class="form-label">Download Sample CSV Format</label>
-                            <a href="{{ asset('updatedcsv.csv') }}" class="btn btn-secondary" download>Download</a>
+                            <a href="{{ asset('updatedcsv.csv') }}" class="btn btn-xs btn-secondary" download>Download</a>
                         </div>
                         <form action="{{ route('artists.import') }}" method="POST" enctype="multipart/form-data">
                             @csrf
@@ -119,6 +124,8 @@
 
 @section('scripts')
     @include('artist.common.scripts')
-    feather.replace();
+    <script>
+        feather.replace();
+    </script>
 @endsection
 
