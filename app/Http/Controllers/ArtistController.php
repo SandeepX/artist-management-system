@@ -140,7 +140,12 @@ class ArtistController extends Controller
             }
             fclose($file);
 
-            return response()->download($filePath, $filename)->deleteFileAfterSend();
+            return response()->download($filePath, $filename,[
+                'Content-Type' => 'text/csv',
+                'Content-Disposition' => 'attachment; filename="' . $filename . '"',
+                'Cache-Control' => 'no-cache, no-store, must-revalidate',
+                'Expires' => '0',
+            ])->deleteFileAfterSend();
 
         }catch(Exception $e){
             return redirect()->back()->with('danger', 'Error Exporting CSV: ' . $e->getMessage());
