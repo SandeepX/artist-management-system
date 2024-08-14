@@ -153,7 +153,17 @@ class ArtistController extends Controller
     {
         $file = $request->file('csv_file');
 
-        if ($file->isValid()) {
+        if ($file->isValid()){
+
+            if($file->getMimeType() !== 'text/csv'){
+                return redirect()->back()->with('danger', 'Invalid file type.');
+            }
+
+            $maxFileSize = 5 * 1024 * 1024;
+            if($file->getSize() > $maxFileSize){
+                return redirect()->back()->with('danger', 'File is too large.');
+            }
+
             $filePath = $file->getRealPath();
             $handle = fopen($filePath, 'r');
             $header = true;
